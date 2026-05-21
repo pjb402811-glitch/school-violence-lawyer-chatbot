@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
     const apiKeyInput = document.getElementById('api-key-input');
-    const apiKeySectionTip = document.querySelector('.section-tip');
+    const agentStatusDot = document.getElementById('agent-status-dot');
+    const agentStatusText = document.getElementById('agent-status-text');
     
     const docSelector = document.getElementById('document-selector');
     const downloadBtn = document.getElementById('download-btn');
@@ -51,11 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     // ==========================================
-    // 0. Vercel 서버 환경 변수 헬스체크
+    // 0. Vercel 서버 환경 변수 헬스체크 및 실시간 상태 감시
     // ==========================================
     let isServerEnvKeyConfigured = false;
 
     async function checkServerHealth() {
+        if (!navigator.onLine) {
+            updateStatusUI(false, "인터넷 미연결");
+            return;
+        }
+
         try {
             const response = await fetch('/api/health');
             if (response.ok) {
@@ -63,18 +69,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.apiKeyConfigured) {
                     isServerEnvKeyConfigured = true;
                     // 사이드바 UI를 환경변수 연동 완료 상태로 업데이트
-                    apiKeyInput.placeholder = "🟢 서버 환경 변수 연동 완료";
+                    apiKeyInput.placeholder = "서버 환경 변수 연동 완료";
                     apiKeyInput.disabled = true;
                     apiKeyInput.style.borderColor = "#10b981"; // 녹색 테두리
-                    apiKeyInput.style.boxShadow = "0 0 10px rgba(16, 185, 129, 0.2)";
-                    apiKeySectionTip.innerHTML = "<span style='color:#10b981; font-weight:bold;'>🟢 Vercel 환경 변수가 감지되었습니다.</span> 추가 입력 없이 즉시 AI 변호사와 실시간 대화가 가능합니다.";
+                    apiKeyInput.style.boxShadow = "0 0 10px rgba(16, 185, 129, 0.15)";
+                    
+                    updateStatusUI(true);
+                } else {
+                    updateStatusUI(false, "미연결 (API 미설정)");
                 }
+            } else {
+                updateStatusUI(false, "미연결");
             }
         } catch (err) {
             console.log("헬스체크 통신 지연 (로컬 환경 구동 중 또는 Vercel 부팅 중)");
+            updateStatusUI(false, "미연결");
         }
     }
+
+    function updateStatusUI(isOnline, text = "") {
+        if (isOnline) {
+            if (agentStatusDot) {
+                agentStatusDot.className = "status-dot status-online";
+                agentStatusDot.title = "AI 법률 에이전트 정상 가동 중";
+            }
+            if (agentStatusText) {
+                agentStatusText.className = "status-text text-online";
+                agentStatusText.innerText = "";
+            }
+        } else {
+            if (agentStatusDot) {
+                agentStatusDot.className = "status-dot status-offline";
+                agentStatusDot.title = "연결 끊김";
+            }
+            if (agentStatusText) {
+                agentStatusText.className = "status-text text-offline";
+                agentStatusText.innerText = text;
+            }
+        }
+    }
+
+    // 실시간 브라우저 연결 상태 변경 리스너
+    window.addEventListener('online', checkServerHealth);
+    window.addEventListener('offline', () => updateStatusUI(false, "인터넷 미연결"));
+
     checkServerHealth();
+
 
     // ==========================================
     // 1. 모바일 사이드바 서랍 토글 로직

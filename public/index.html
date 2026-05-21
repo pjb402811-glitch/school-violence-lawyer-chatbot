@@ -11,7 +11,7 @@
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css?v=2.2.0">
+    <link rel="stylesheet" href="style.css?v=2.3.0">
 </head>
 <body>
 
@@ -26,16 +26,74 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <img src="app_icon.png" alt="App Icon" class="sidebar-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1048/1048953.png'">
-                <h2>쏭비서 법률 에이전트</h2>
+                <div class="header-text-area" style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <h2>쏭비서 법률 에이전트</h2>
+                        <span id="agent-status-dot" class="status-dot status-offline"></span>
+                    </div>
+                    <span id="agent-status-text" class="status-text text-offline">미연결</span>
+                </div>
             </div>
             
+            <!-- 3차 고도화: ⚡ 학폭위 사후 대반격 로드맵 패널 (5차 개편으로 최상단 이동) -->
+            <div class="sidebar-section">
+                <h3><i class="fa-solid fa-bolt" style="color:#d4af37;"></i> 사후 대반격 로드맵</h3>
+                <p class="section-desc">학폭위 결정이 경미해 마음에 안 들 때</p>
+                
+                <div class="roadmap-accordion">
+                    <!-- 행정 단계 -->
+                    <div class="roadmap-item">
+                        <button class="roadmap-btn">
+                            <span><i class="fa-solid fa-building-flag"></i> 1. 학교 / 교육청 행정</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div class="roadmap-panel">
+                            <ul>
+                                <li><strong>교육청 행정심판</strong>: 처분 통지서 수령 90일 이내 청구(처분 수위 상향)</li>
+                                <li><strong>관할 행정소송</strong>: 행정심판 기각 재결서 송달 90일 이내 제소</li>
+                            </ul>
+                            <button class="quick-ask-btn" data-question="이미 학폭위 결정이 나왔는데 처분이 너무 가벼워서 마음에 안 들어요. 교육청 행정심판을 청구해서 처분을 전학이나 학급교체로 상향할 수 있는 구체적인 절차와 방법, 기한을 법령 및 판례 근거와 함께 알려주세요.">💬 이 질문 바로 하기</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 형사 단계 -->
+                    <div class="roadmap-item">
+                        <button class="roadmap-btn">
+                            <span><i class="fa-solid fa-handcuffs"></i> 2. 형사 고소 단죄</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div class="roadmap-panel">
+                            <ul>
+                                <li><strong>경찰 형사 고소</strong>: 상해, 폭행, 협박, 강요죄 등 수사기관 접수</li>
+                                <li><strong>가해학생 연령별</strong>: 만 14세 이상 범죄소년 형사기소 / 만 10~14세 촉법소년 소년원 처분 압박</li>
+                            </ul>
+                            <button class="quick-ask-btn" data-question="학폭 처벌 외에 가해학생을 형사 고소하고 싶습니다. 가해학생이 만 14세 이상인 경우와 촉법소년(만 10~14세)인 경우에 각각 취할 수 있는 형사적 절차, 고소 가능 죄명, 소년원 송치 등 강력 단죄 방법에 대해 상세히 알려주세요.">💬 이 질문 바로 하기</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 민사 단계 -->
+                    <div class="roadmap-item">
+                        <button class="roadmap-btn">
+                            <span><i class="fa-solid fa-coins"></i> 3. 민사 소송 & 가압류</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div class="roadmap-panel">
+                            <ul>
+                                <li><strong>부모 연대 책임</strong>: 민법 제755조를 적용해 가해자 부모를 공동피고로 손배소</li>
+                                <li><strong>재산 선제 가압류</strong>: 소송 전 부모 명의 아파트 및 예금계좌 일시 동결</li>
+                            </ul>
+                            <button class="quick-ask-btn" data-question="가해자 측 부모에게 강력한 경제적 타격을 주고 위자료와 치료비를 전액 배상받고 싶습니다. 민사소송 전 가해자 부모 재산(아파트, 계좌 등)을 선제 가압류하는 요령과 민법 제755조를 통한 감독의무자 책임 추궁 손해배상 청구 절차를 자세히 설명해 주세요.">💬 이 질문 바로 하기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="sidebar-section">
                 <h3><i class="fa-solid fa-key"></i> Gemini API Key 설정</h3>
                 <div class="input-with-icon">
                     <i class="fa-solid fa-lock"></i>
                     <input type="password" id="api-key-input" placeholder="구글 API 키 입력" title="Gemini API Key">
                 </div>
-                <p class="section-tip">API 키 입력 시 실시간 판례 연동 초고도 RAG 모드로 동작합니다.</p>
             </div>
 
             <!-- 4차 고도화: 🎯 가해자 핵심 취약점 공략 설정 패널 -->
@@ -110,58 +168,6 @@
                 <button id="download-btn" class="download-btn"><i class="fa-solid fa-circle-down"></i> 서식 무료 다운로드</button>
             </div>
 
-            <!-- 3차 고도화: ⚡ 학폭위 사후 대반격 로드맵 패널 -->
-            <div class="sidebar-section">
-                <h3><i class="fa-solid fa-bolt" style="color:#d4af37;"></i> 사후 대반격 로드맵</h3>
-                <p class="section-desc">학폭위 결정이 경미해 마음에 안 들 때</p>
-                
-                <div class="roadmap-accordion">
-                    <!-- 행정 단계 -->
-                    <div class="roadmap-item">
-                        <button class="roadmap-btn">
-                            <span><i class="fa-solid fa-building-flag"></i> 1. 학교 / 교육청 행정</span>
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </button>
-                        <div class="roadmap-panel">
-                            <ul>
-                                <li><strong>교육청 행정심판</strong>: 처분 통지서 수령 90일 이내 청구(처분 수위 상향)</li>
-                                <li><strong>관할 행정소송</strong>: 행정심판 기각 재결서 송달 90일 이내 제소</li>
-                            </ul>
-                            <button class="quick-ask-btn" data-question="이미 학폭위 결정이 나왔는데 처분이 너무 가벼워서 마음에 안 들어요. 교육청 행정심판을 청구해서 처분을 전학이나 학급교체로 상향할 수 있는 구체적인 절차와 방법, 기한을 법령 및 판례 근거와 함께 알려주세요.">💬 이 질문 바로 하기</button>
-                        </div>
-                    </div>
-                    
-                    <!-- 형사 단계 -->
-                    <div class="roadmap-item">
-                        <button class="roadmap-btn">
-                            <span><i class="fa-solid fa-handcuffs"></i> 2. 형사 고소 단죄</span>
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </button>
-                        <div class="roadmap-panel">
-                            <ul>
-                                <li><strong>경찰 형사 고소</strong>: 상해, 폭행, 협박, 강요죄 등 수사기관 접수</li>
-                                <li><strong>가해학생 연령별</strong>: 만 14세 이상 범죄소년 형사기소 / 만 10~14세 촉법소년 소년원 처분 압박</li>
-                            </ul>
-                            <button class="quick-ask-btn" data-question="학폭 처벌 외에 가해학생을 형사 고소하고 싶습니다. 가해학생이 만 14세 이상인 경우와 촉법소년(만 10~14세)인 경우에 각각 취할 수 있는 형사적 절차, 고소 가능 죄명, 소년원 송치 등 강력 단죄 방법에 대해 상세히 알려주세요.">💬 이 질문 바로 하기</button>
-                        </div>
-                    </div>
-                    
-                    <!-- 민사 단계 -->
-                    <div class="roadmap-item">
-                        <button class="roadmap-btn">
-                            <span><i class="fa-solid fa-coins"></i> 3. 민사 소송 & 가압류</span>
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </button>
-                        <div class="roadmap-panel">
-                            <ul>
-                                <li><strong>부모 연대 책임</strong>: 민법 제755조를 적용해 가해자 부모를 공동피고로 손배소</li>
-                                <li><strong>재산 선제 가압류</strong>: 소송 전 부모 명의 아파트 및 예금계좌 일시 동결</li>
-                            </ul>
-                            <button class="quick-ask-btn" data-question="가해자 측 부모에게 강력한 경제적 타격을 주고 위자료와 치료비를 전액 배상받고 싶습니다. 민사소송 전 가해자 부모 재산(아파트, 계좌 등)을 선제 가압류하는 요령과 민법 제755조를 통한 감독의무자 책임 추궁 손해배상 청구 절차를 자세히 설명해 주세요.">💬 이 질문 바로 하기</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             
             <div class="sidebar-footer">
                 <p>© 2026 쏭비서 법률 오케스트레이션</p>
@@ -239,6 +245,6 @@
     </div>
 
     <!-- JS Logic -->
-    <script src="app.js?v=2.2.0"></script>
+    <script src="app.js?v=2.3.0"></script>
 </body>
 </html>
