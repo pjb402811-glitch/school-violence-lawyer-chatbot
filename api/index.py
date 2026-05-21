@@ -31,10 +31,16 @@ class ChatMessage(BaseModel):
     role: str
     content: str
 
+class AggressorInfo(BaseModel):
+    ageGroup: str
+    ageLabel: str
+    hasPrecedent: bool
+
 class ChatRequest(BaseModel):
     message: str
     apiKey: Optional[str] = None
     history: List[ChatMessage] = []
+    aggressorInfo: Optional[AggressorInfo] = None
 
 class SimulateRequest(BaseModel):
     severity: int
@@ -65,6 +71,47 @@ async def chat_endpoint(req: ChatRequest):
     # 2. 앙상블 RAG 검색기 작동 (판례 및 가이드북 추출)
     context = retrieve_relevant_knowledge(user_query)
     
+    # 3. 가해자 신상 취약점 정보 분석 및 법리 아킬레스건 동적 인젝션
+    aggressor_strategy = ""
+    if req.aggressorInfo:
+        info = req.aggressorInfo
+        precedent_text = "상습 재범 전학자" if info.hasPrecedent else "초범"
+        aggressor_strategy += (
+            f"\n★ [가해자 신상 취약점 핀포인트 저격 법리 적용]:\n"
+            f"- 가해학생 연령 및 처벌 조건: {info.ageLabel}\n"
+            f"- 가해학생 학폭 전과 여부: {precedent_text}\n"
+        )
+        
+        if info.hasPrecedent:
+            aggressor_strategy += (
+                "- [상습범 가중처벌 법리]: 가해학생은 이전 학교에서도 학교폭력 이력으로 인해 강제 전학을 온 '상습 재범 가해자'입니다. "
+                "학폭위 심의 시 교육부 고시 기준상 '폭력의 지속성' 항목은 즉시 최고점인 4점으로 고정되어야 하며, 반성도 또한 극히 낮으므로 가해자 측에 극히 불리한 점수가 책정되어야 함을 강력 피력하십시오. "
+                "엄벌의견서와 행정심판 청구서에서 가해자의 '상습 학폭 성향'을 무자비하게 강조하여 제8호 전학(또는 고교의 경우 제9호 퇴학) 조치를 무조건 도출해 내야 합니다.\n"
+                "- [교내 방치 위법성 경고]: 만일 학교가 가해학생과 피해학생을 즉각 분리(출석정지 또는 학급교체)하지 않고 동일 교실에 방치한다면, 이는 명백히 위법 상태이며 학교장 및 관할 교육청은 국가배상법 제2조에 따른 직무유기 손해배상 책임을 져야 함을 날카롭게 주장하십시오.\n"
+            )
+        else:
+            aggressor_strategy += (
+                "- [초범 대응 법리]: 비록 가해학생이 초범이라 주장하더라도 사안의 중대성과 정신적 상해의 지속성을 고려하여 즉각 제6호 출석정지 및 제7호 학급교체 이상의 분리 배제 조치를 적극 관철하십시오.\n"
+            )
+            
+        if info.ageGroup == "criminal":
+            aggressor_strategy += (
+                "- [만 14세 이상 범죄소년 형사 단죄]: 가해학생은 형사책임 연령인 만 14세 이상 '범죄소년'입니다. "
+                "촉법소년과 달리 실질적인 형사소송법상 피의자 신분으로 상해(정신과 PTSD 진단 포함), 공동폭행, 공동강요죄 등으로 정식 형사 고소가 가능하며, 기소 시 형사 전과기록(빨간 줄)이 남는 막강한 약점을 쥐고 흔들어야 합니다. 경찰서 형사팀에 즉각 고소장을 이송하십시오.\n"
+                "- [민법 제755조 부모 압박 및 아파트 가압류]: 가해자 부모를 공동불법행위자로 묶어 민사소송을 제기하기 전, 가해 부모 명의의 아파트, 예금계좌 등을 선제 가압류하여 강력한 경제적 심리전 압박을 입히십시오. 이를 통해 합의의 Absolute Zone을 장악하십시오.\n"
+                "- [징벌적 합의 조서 작성]: 합의 시 '비밀유지 조항 위반 시 건당 500만 원 위약벌 특약', '치료비 전액 실비 청구 단서', '상대방의 가해 인정 및 공식 사과'를 합의 조서에 핀포인트로 조율하십시오.\n"
+            )
+        elif info.ageGroup == "촉법":
+            aggressor_strategy += (
+                "- [만 10세 ~ 14세 촉법소년 소년원 송치 압박]: 가해학생은 형사미성년자(촉법소년)로 형사 처벌은 면제되나, 가정법원 소년부에 정식 송치되어 소년법 제32조에 따른 소년원 송치(최대 2년) 등의 보호처분이 고스란히 가능함을 알리십시오. "
+                "수사 단계에서 경찰 수사관에게 '소년부 송치 강력의견서'를 제출해 숨통을 죄고, 가해자 부모를 상대로 민법 제755조 손해배상을 청구하십시오.\n"
+            )
+        else:
+            aggressor_strategy += (
+                "- [만 10세 미만 보호처분 외 조치]: 만 10세 미만은 소년법마저 배제되지만, 학폭법상 행정 조치(1호~8호 전학)는 100% 동등하게 처분되므로 학폭위 조치 수준을 최고 수위로 끌어올려야 합니다. "
+                "동시에 부모에 대한 민사상 책임 추궁(치료비 및 위자료 손해배상)은 완벽히 가능하므로 가해 부모의 감독자 불법행위 책임 소송으로 대항하십시오.\n"
+            )
+
     if api_key and api_key.strip():
         try:
             # 구글 제미나이 엔진 구성
@@ -82,6 +129,7 @@ async def chat_endpoint(req: ChatRequest):
                 "★ [합의 및 협상 전략 조언] 합의 또는 상대 변호사 대처 문의 시, 징벌적 위약벌 조항(비밀유지 위반 시 건당 500만 원 청구), 후유증 치료비 실비 청구 단서, 선결 조치 등 구체적인 실무 합의 조서 작성법과 상대 변호사를 압도하는 구두 스크립트를 포함하여 빈틈없이 조언해 주십시오.\n"
                 "톤앤매너는 자녀의 일로 애가 타는 부모님께 무한히 공감하면서도, 상대방 변호사를 법적으로 압도하기 위해 고도로 차갑고 날카로우며 빈틈이 없는 이성적 어조여야 합니다.\n"
                 "모호한 법률 조언은 지향하고 확실하지 않은 사안은 1대1 대면 자문을 받으라는 주의도 포함시키십시오.\n\n"
+                f"{aggressor_strategy}\n"
                 f"[관련 법령 및 대법원 판례 컨텍스트]:\n{context}"
             )
             
@@ -99,9 +147,28 @@ async def chat_endpoint(req: ChatRequest):
             bot_response = f"⚠️ Gemini API 가동 중 오류가 발생했습니다: {str(e)}\n\n(안내: API Key 권한이나 잔여 크레딧을 확인해 주십시오. 대체 시스템으로 로컬 룰베이스 조언을 제공합니다.)"
     else:
         # API 키가 환경 변수와 수동 입력 둘 다 없을 때의 친절한 대체 룰베이스 조언
+        local_aggressor_advice = ""
+        if req.aggressorInfo:
+            info = req.aggressorInfo
+            local_aggressor_advice += f"\n🎯 **[가해자 취약점 맞춤 권고 - {info.ageLabel}]**\n"
+            if info.hasPrecedent:
+                local_aggressor_advice += (
+                    "- **과거 학폭 이력이 확인된 상습 가해학생**: 지속성 4점 배점을 강력 주장하여 '제8호 강제 전학' 조치를 무조건 도출해 내야 합니다. 동일학급 방치 시 학교장의 의무 위반(국가배상 청구 예고)을 강력히 서면에 명시하십시오.\n"
+                )
+            if info.ageGroup == "criminal":
+                local_aggressor_advice += (
+                    "- **만 14세 이상 범죄소년 형사책임**: 소년원 수준이 아니라 정식 형사 고소를 통해 벌금형 및 전과기록(빨간 줄)을 형성할 수 있는 강력한 처벌 대상입니다. 경찰 고소를 즉시 진행해 징벌적 위약벌 특약이 포함된 합의 압박을 가하십시오.\n"
+                )
+            elif info.ageGroup == "촉법":
+                local_aggressor_advice += (
+                    "- **만 10~14세 촉법소년 대응**: 소년법 제32조에 따라 소년원 송치(최대 2년) 보호처분을 경찰 수사 의견으로 이송하도록 수사관을 압박하고, 부모를 상대로 민법 제755조 경제적 타격(손해배상 소송)을 개시하십시오.\n"
+                )
+            local_aggressor_advice += "\n"
+
         bot_response = (
             "⚖️ **[로컬 내장 법률 시스템 기본 조언]**\n\n"
             "현재 **Vercel 설정(Environment Variables)에서 `GEMINI_API_KEY`를 키로 하여 구글 API 키 값을 등록해 주시면, 이 챗봇은 자녀분을 철저히 구제할 판례 RAG AI 모드로 24시간 실시간 동작합니다!**\n\n"
+            f"{local_aggressor_advice}"
             "가해자 측 변호사가 선임되어 '학습권' 또는 '경미한 사안'이라 주장하며 공격을 펼치는 현재 상황에서 즉시 취하셔야 할 법률 대응 지침은 다음과 같습니다:\n\n"
             "1. **학습권 논리 파쇄**: 대법원 2022두56676 판결에 따라 '가해자 선도보다 피해학생의 보호구제가 압도적 최우선'입니다. 교내 동일 학급 방치는 위법 상태이므로, 준비된 `학교장 긴급분리 촉구서`를 다운로드하여 즉각 이송하십시오.\n"
             "2. **정신적 상해 적극 소명**: 행심위 재결 경향상 신체 외상(전치)이 없더라도 정신적 피해(등교 거부, 정신과 진료)만으로 폭력의 심각성이 인정되므로, 진단서 소견에 '학폭 기인 PTSD'를 구체적으로 넣으셔야 합니다.\n"

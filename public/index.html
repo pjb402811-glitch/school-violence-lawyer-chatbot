@@ -38,6 +38,29 @@
                 <p class="section-tip">API 키 입력 시 실시간 판례 연동 초고도 RAG 모드로 동작합니다.</p>
             </div>
 
+            <!-- 4차 고도화: 🎯 가해자 핵심 취약점 공략 설정 패널 -->
+            <div class="sidebar-section">
+                <h3><i class="fa-solid fa-crosshairs" style="color: #ef4444;"></i> 가해자 취약점 공략</h3>
+                <p class="section-desc">가해자 신상 아킬레스건 핀포인트 저격</p>
+                
+                <div class="select-with-icon">
+                    <i class="fa-solid fa-user-clock"></i>
+                    <select id="aggressor-age" title="가해학생 연령 구분">
+                        <option value="criminal">만 14세 이상 범죄소년 (형사처벌 대상)</option>
+                        <option value="촉법">만 10세 ~ 14세 촉법소년 (소년원 가능)</option>
+                        <option value="kid">만 10세 미만 (보호처분 제외)</option>
+                    </select>
+                </div>
+                
+                <div class="checkbox-group" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(239, 68, 68, 0.05); padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.15);">
+                    <input type="checkbox" id="aggressor-precedent" style="cursor: pointer; width: 16px; height: 16px; accent-color: #ef4444;">
+                    <label for="aggressor-precedent" style="font-size: 0.75rem; color: #f3f4f6; cursor: pointer; font-weight: 700;">
+                        ⚠️ 과거 학폭 징계 및 전학 이력자 (상습범)
+                    </label>
+                </div>
+                <p class="section-tip" style="color: #ef4444; font-size: 0.7rem; margin-top: -0.25rem;">* 체크 시 상습 재범 가중치로 인해 폭력의 지속성이 4점으로 자동 강제 락킹(Locking)됩니다.</p>
+            </div>
+
             <div class="sidebar-section">
                 <h3><i class="fa-solid fa-calculator"></i> 학폭위 처분 시뮬레이터</h3>
                 <p class="section-desc">교육부 고시 처분 적용 기준</p>

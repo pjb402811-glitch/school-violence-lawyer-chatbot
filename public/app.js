@@ -21,6 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const docSelector = document.getElementById('document-selector');
     const downloadBtn = document.getElementById('download-btn');
     
+    // 4차 고도화: 가해자 핵심 취약점 설정 요소 캐싱
+    const aggressorAge = document.getElementById('aggressor-age');
+    const aggressorPrecedent = document.getElementById('aggressor-precedent');
+    
     // 시뮬레이터 슬라이더 요소 캐싱
     const slides = {
         severity: document.getElementById('slide-severity'),
@@ -106,6 +110,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. 학폭위 예상 조치 시뮬레이터 로직 (실시간 API 연동 & Fallback)
     // ==========================================
     async function updateSimulation() {
+        // 4차 고도화: 상습 재범 가중 락킹 (폭력의 지속성 4점 잠금 및 슬라이더 비활성화)
+        if (aggressorPrecedent && aggressorPrecedent.checked) {
+            slides.duration.value = 4;
+            slides.duration.disabled = true;
+            slides.duration.style.opacity = 0.5;
+        } else if (slides.duration) {
+            slides.duration.disabled = false;
+            slides.duration.style.opacity = 1.0;
+        }
+
         const values = {
             severity: parseInt(slides.severity.value),
             duration: parseInt(slides.duration.value),
@@ -116,7 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // UI 숫자 렌더링
         for (const key in values) {
-            valOutputs[key].innerText = values[key];
+            if (key === 'duration' && aggressorPrecedent && aggressorPrecedent.checked) {
+                valOutputs[key].innerText = "4 (상습 가중)";
+            } else {
+                valOutputs[key].innerText = values[key];
+            }
         }
 
         try {
@@ -172,6 +190,11 @@ document.addEventListener('DOMContentLoaded', () => {
     for (const key in slides) {
         slides[key].addEventListener('input', updateSimulation);
     }
+    
+    // 4차 고도화: 가해자 취약점 요소에도 실시간 시뮬레이터 갱신 이벤트 바인딩
+    if (aggressorPrecedent) aggressorPrecedent.addEventListener('change', updateSimulation);
+    if (aggressorAge) aggressorAge.addEventListener('change', updateSimulation);
+    
     updateSimulation();
 
     // ==========================================
@@ -294,7 +317,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     message: query,
                     apiKey: apiKey || null,
-                    history: chatMemory
+                    history: chatMemory,
+                    aggressorInfo: {
+                        ageGroup: aggressorAge ? aggressorAge.value : 'criminal',
+                        ageLabel: aggressorAge ? aggressorAge.options[aggressorAge.selectedIndex].text : '만 14세 이상 범죄소년 (형사처벌 대상)',
+                        hasPrecedent: aggressorPrecedent ? aggressorPrecedent.checked : false
+                    }
                 })
             });
 
