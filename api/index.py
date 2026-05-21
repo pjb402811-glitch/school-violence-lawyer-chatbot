@@ -69,7 +69,7 @@ async def chat_endpoint(req: ChatRequest):
         try:
             # 구글 제미나이 엔진 구성
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel("gemini-1.5-flash")
+            model = genai.GenerativeModel("gemini-1.5-pro")
             
             # 전문 변호사 법리 프롬프트 조립
             system_prompt = (
