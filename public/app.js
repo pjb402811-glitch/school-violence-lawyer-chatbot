@@ -328,4 +328,51 @@ document.addEventListener('DOMContentLoaded', () => {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight - 10) + 'px';
     });
+
+    // ==========================================
+    // 3차 고도화: ⚡ 사후 대반격 로드맵 아코디언 및 퀵 질문 연동
+    // ==========================================
+    const roadmapBtns = document.querySelectorAll('.roadmap-btn');
+    
+    roadmapBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const panel = btn.nextElementSibling;
+            const icon = btn.querySelector('i');
+            
+            // 토글 처리
+            panel.classList.toggle('show');
+            icon.classList.toggle('rotate');
+            
+            // 다른 아코디언을 닫아서 깔끔하게 조율 (쏭비서 오케스트레이션)
+            roadmapBtns.forEach(otherBtn => {
+                if (otherBtn !== btn) {
+                    const otherPanel = otherBtn.nextElementSibling;
+                    const otherIcon = otherBtn.querySelector('i');
+                    otherPanel.classList.remove('show');
+                    otherIcon.classList.remove('rotate');
+                }
+            });
+        });
+    });
+
+    // 퀵 질문(Click-to-Ask) 버튼 연동
+    const quickAskBtns = document.querySelectorAll('.quick-ask-btn');
+    quickAskBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 버블링으로 인한 패널 닫힘 예방
+            const question = btn.getAttribute('data-question');
+            if (question) {
+                chatInput.value = question;
+                
+                // 모바일 환경일 경우, 질문이 잘 보이고 전송 화면으로 포커싱되도록 사이드바 닫기
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('open');
+                    toggleIcon.className = 'fa-solid fa-bars';
+                }
+                
+                // 챗봇 답변 프로세스 전격 기동
+                handleSendMessage();
+            }
+        });
+    });
 });

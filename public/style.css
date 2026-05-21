@@ -668,3 +668,124 @@ body, html {
         padding: 1rem;
     }
 }
+
+/* ==========================================
+   3차 고도화: ⚡ 사후 대반격 로드맵 아코디언 UI
+   ========================================== */
+.roadmap-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.roadmap-item {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.01);
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+
+.roadmap-item:hover {
+    border-color: rgba(212, 175, 55, 0.2);
+}
+
+.roadmap-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.roadmap-btn span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.roadmap-btn i {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    transition: transform 0.3s ease;
+}
+
+.roadmap-btn i.rotate {
+    transform: rotate(180deg);
+}
+
+.roadmap-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s ease;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0 1rem;
+}
+
+.roadmap-panel.show {
+    max-height: 500px; /* 충분히 넉넉한 높이 */
+    padding: 0.85rem 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.roadmap-panel ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 0.85rem;
+}
+
+.roadmap-panel li {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    position: relative;
+    padding-left: 0.75rem;
+}
+
+.roadmap-panel li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--gold-accent);
+}
+
+.roadmap-panel li strong {
+    color: #ffffff;
+}
+
+/* 퀵 질문하기 버튼 */
+.quick-ask-btn {
+    width: 100%;
+    padding: 0.55rem;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 6px;
+    color: var(--gold-accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    transition: var(--transition-smooth);
+}
+
+.quick-ask-btn:hover {
+    background: var(--gold-accent);
+    color: #000000;
+    border-color: var(--gold-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.15);
+}
+
