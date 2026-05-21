@@ -231,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function parseMarkdown(text) {
         let parsed = text
+            .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" style="color:#d4af37; text-decoration:underline; font-weight:bold;">$1</a>')
             .replace(/\n/g, '<br>')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
