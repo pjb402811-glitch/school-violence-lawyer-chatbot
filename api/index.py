@@ -10,6 +10,7 @@ from typing import List, Optional
 import google.generativeai as genai
 import os
 import sys
+import base64
 
 # api 디렉토리를 path에 추가하여 로컬 import 보장
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -36,11 +37,17 @@ class AggressorInfo(BaseModel):
     ageLabel: str
     hasPrecedent: bool
 
+class AttachedFile(BaseModel):
+    name: str
+    type: str
+    base64Data: str
+
 class ChatRequest(BaseModel):
     message: str
     apiKey: Optional[str] = None
     history: List[ChatMessage] = []
     aggressorInfo: Optional[AggressorInfo] = None
+    attachedFiles: Optional[List[AttachedFile]] = None
 
 class SimulateRequest(BaseModel):
     severity: int
@@ -118,6 +125,36 @@ async def chat_endpoint(req: ChatRequest):
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel("gemini-3.5-flash")
             
+            # 첨부 서류 텍스트 및 멀티모달 바이너리 추출
+            attached_docs_context = ""
+            multimodal_contents = []
+            
+            if req.attachedFiles:
+                for file in req.attachedFiles:
+                    # 1. 텍스트 성격의 파일은 직접 프롬프트 텍스트에 삽입 (신뢰성 극대화)
+                    if "text/" in file.type or file.name.endswith(".txt") or file.name.endswith(".md") or file.name.endswith(".json"):
+                        try:
+                            b64_data = file.base64Data
+                            if "," in b64_data:
+                                b64_data = b64_data.split(",")[1]
+                            decoded_text = base64.b64decode(b64_data).decode('utf-8', errors='ignore')
+                            attached_docs_context += f"\n--- [첨부 서류: {file.name}] ---\n{decoded_text}\n"
+                        except Exception as e:
+                            print(f"텍스트 파일 디코딩 오류 ({file.name}): {str(e)}")
+                    # 2. 이미지 및 PDF 등 바이너리 파일은 멀티모달 인라인 데이터 파트로 주입
+                    else:
+                        try:
+                            b64_data = file.base64Data
+                            if "," in b64_data:
+                                b64_data = b64_data.split(",")[1]
+                            file_bytes = base64.b64decode(b64_data)
+                            multimodal_contents.append({
+                                'mime_type': file.type,
+                                'data': file_bytes
+                            })
+                        except Exception as e:
+                            print(f"바이너리 파일 파싱 오류 ({file.name}): {str(e)}")
+            
             # 전문 변호사 법리 프롬프트 조립 (2차 고도화 - 출처 명시 및 하이퍼링크 의무화)
             system_prompt = (
                 "당신은 대한민국 최고 수준의 학교폭력 전문 변호사이자 피해학생의 편에서 가해학생을 강력 징벌하는 유능한 대리인입니다.\n"
@@ -127,11 +164,16 @@ async def chat_endpoint(req: ChatRequest):
                 "★ [중요 - 대표 지시 규칙] 답변에 판례, 법률, 지침, 가이드 등을 인용할 때는 반드시 그 근거와 공식 출처를 명확히 명시하십시오. (예: '대법원 2022두56676 판결', '학교폭력예방 및 대책에 관한 법률 제16조', '교육부 학교폭력 사안처리 가이드북')\n"
                 "★ [중요 - 하이퍼링크 활용] 컨텍스트에 수록된 공식 국가법령정보센터 및 판례 마크다운 하이퍼링크가 있을 경우, 본문 작성 시 반드시 해당 법률/판례 텍스트 뒤에 링크를 결합하여 제공하십시오. (예: [학교폭력예방 및 대책에 관한 법률 제17조](https://www.law.go.kr/법령/학교폭력예방및대책에관한법률/제17조))\n"
                 "★ [합의 및 협상 전략 조언] 합의 또는 상대 변호사 대처 문의 시, 징벌적 위약벌 조항(비밀유지 위반 시 건당 500만 원 청구), 후유증 치료비 실비 청구 단서, 선결 조치 등 구체적인 실무 합의 조서 작성법과 상대 변호사를 압도하는 구두 스크립트를 포함하여 빈틈없이 조언해 주십시오.\n"
+                "★ [첨부 서류 정밀 분석 지침] 만약 사용자가 진단서, 학폭위 결과서, 증언, 녹취록 등의 서류를 첨부한 경우, 해당 서류의 텍스트나 멀티모달 이미지/PDF 내용을 돋보기 들여다보듯 꼼꼼히 대조하여 사실관계를 입증하고, '첨부된 [서류명]을 분석한 결과...' 형태로 실전 법적 전술에 녹여내어 자녀의 피해 증빙과 상대방 가해의 악질성을 입체적으로 입증하십시오.\n"
                 "톤앤매너는 자녀의 일로 애가 타는 부모님께 무한히 공감하면서도, 상대방 변호사를 법적으로 압도하기 위해 고도로 차갑고 날카로우며 빈틈이 없는 이성적 어조여야 합니다.\n"
                 "모호한 법률 조언은 지향하고 확실하지 않은 사안은 1대1 대면 자문을 받으라는 주의도 포함시키십시오.\n\n"
-                f"{aggressor_strategy}\n"
-                f"[관련 법령 및 대법원 판례 컨텍스트]:\n{context}"
             )
+            
+            if attached_docs_context:
+                system_prompt += f"[사용자가 직접 첨부한 서류 본문 내용]:\n{attached_docs_context}\n\n"
+                
+            system_prompt += f"{aggressor_strategy}\n"
+            system_prompt += f"[관련 법령 및 대법원 판례 컨텍스트]:\n{context}"
             
             # 이전 대화 내역 누적
             history_prompt = "이전 대화 기록:\n"
@@ -140,7 +182,12 @@ async def chat_endpoint(req: ChatRequest):
                 
             full_prompt = f"{system_prompt}\n\n{history_prompt}\n사용자 질문: {user_query}\n변호사 답변:"
             
-            response = model.generate_content(full_prompt)
+            # 텍스트와 멀티모달 바이너리를 결합한 제미나이 앙상블 페이로드 빌드
+            gemini_payload = [full_prompt]
+            if multimodal_contents:
+                gemini_payload.extend(multimodal_contents)
+            
+            response = model.generate_content(gemini_payload)
             bot_response = response.text
             
         except Exception as e:

@@ -21,6 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const docSelector = document.getElementById('document-selector');
     const downloadBtn = document.getElementById('download-btn');
+
+    // 6차 고도화: 파일 첨부 요소 캐싱
+    const attachBtn = document.getElementById('attach-btn');
+    const fileInput = document.getElementById('file-input');
+    const attachedFilesContainer = document.getElementById('attached-files-container');
     
     // 4차 고도화: 가해자 핵심 취약점 설정 요소 캐싱
     const aggressorAge = document.getElementById('aggressor-age');
@@ -50,6 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let chatMemory = [
         { role: "assistant", content: "안녕하십니까, 피해 학생의 권리를 철저하게 사수하는 학교폭력 전문 AI 변호사입니다." }
     ];
+
+    // 6차 고도화: 파일 첨부 메모리
+    let attachedFilesList = [];
 
     // ==========================================
     // 0. Vercel 서버 환경 변수 헬스체크 및 실시간 상태 감시
@@ -267,6 +275,118 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
+    // 4.5. 6차 고도화: 파일 첨부 (진단서, 녹취록 등) 처리 핵심 로직
+    // ==========================================
+    if (attachBtn && fileInput) {
+        // 클립 단추 클릭 시 파일 업로드 창 활성화
+        attachBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // 파일 선택 체인지 이벤트
+        fileInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            for (const file of files) {
+                // 1. 단일 파일 용량 제한 (최대 4MB)
+                const maxSize = 4 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    alert(`파일 [${file.name}]의 용량이 4MB를 초과합니다. 4MB 이하의 문서나 이미지만 첨부할 수 있습니다.`);
+                    continue;
+                }
+
+                // 2. 이미 등록된 중복 파일 스킵
+                if (attachedFilesList.some(f => f.name === file.name)) {
+                    continue;
+                }
+
+                try {
+                    const base64Data = await encodeFileToBase64(file);
+                    attachedFilesList.push({
+                        name: file.name,
+                        type: file.type,
+                        base64Data: base64Data
+                    });
+                } catch (err) {
+                    console.error("파일 Base64 인코딩 실패:", err);
+                    alert(`파일 [${file.name}]을 읽는 중 오류가 발생했습니다.`);
+                }
+            }
+
+            // 인풋 초기화 (같은 파일을 다시 올릴 수 있도록)
+            fileInput.value = '';
+            renderAttachedFiles();
+        });
+    }
+
+    // 파일을 Base64 데이터 URI 문자열로 비동기 변환
+    function encodeFileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+        });
+    }
+
+    // 첨부된 파일 리스트를 칩 UI로 렌더링
+    function renderAttachedFiles() {
+        if (!attachedFilesContainer) return;
+
+        attachedFilesContainer.innerHTML = '';
+
+        if (attachedFilesList.length === 0) {
+            attachedFilesContainer.style.display = 'none';
+            return;
+        }
+
+        attachedFilesContainer.style.display = 'flex';
+
+        attachedFilesList.forEach((file, index) => {
+            const chip = document.createElement('div');
+            chip.className = 'file-chip';
+
+            // 파일 형식별 최적 아이콘 부여
+            let iconClass = 'fa-solid fa-file-lines'; // 기본 텍스트 아이콘
+            if (file.type.startsWith('image/')) {
+                iconClass = 'fa-solid fa-file-image';
+            } else if (file.type === 'application/pdf') {
+                iconClass = 'fa-solid fa-file-pdf';
+            }
+
+            chip.innerHTML = `
+                <i class="${iconClass}"></i>
+                <span class="file-chip-name" title="${file.name}">${truncateFileName(file.name, 15)}</span>
+                <button class="file-chip-remove" data-index="${index}" title="첨부 삭제">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            `;
+
+            // 개별 삭제 리스너 바인딩
+            chip.querySelector('.file-chip-remove').addEventListener('click', (e) => {
+                const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+                attachedFilesList.splice(idx, 1);
+                renderAttachedFiles();
+            });
+
+            attachedFilesContainer.appendChild(chip);
+        });
+    }
+
+    // 파일 이름이 길 경우 말줄임표 처리
+    function truncateFileName(name, maxLength) {
+        if (name.length <= maxLength) return name;
+        const extIdx = name.lastIndexOf('.');
+        if (extIdx === -1) return name.substring(0, maxLength - 3) + '...';
+        
+        const ext = name.substring(extIdx);
+        const base = name.substring(0, extIdx);
+        const truncBase = base.substring(0, maxLength - ext.length - 3);
+        return truncBase + '...' + ext;
+    }
+
+    // ==========================================
     // 5. RAG AI 챗봇 대화 로직
     // ==========================================
     function appendMessage(role, text) {
@@ -345,6 +465,11 @@ document.addEventListener('DOMContentLoaded', () => {
         chatInput.value = '';
         chatInput.style.height = 'auto';
 
+        // 6차 고도화: 현재 파일 목록의 복사본을 생성하고 리스트를 비웁니다.
+        const currentAttachedFiles = [...attachedFilesList];
+        attachedFilesList = [];
+        renderAttachedFiles();
+
         chatMemory.push({ role: 'user', content: query });
         showTypingIndicator();
 
@@ -362,7 +487,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         ageGroup: aggressorAge ? aggressorAge.value : 'criminal',
                         ageLabel: aggressorAge ? aggressorAge.options[aggressorAge.selectedIndex].text : '만 14세 이상 범죄소년 (형사처벌 대상)',
                         hasPrecedent: aggressorPrecedent ? aggressorPrecedent.checked : false
-                    }
+                    },
+                    attachedFiles: currentAttachedFiles.length > 0 ? currentAttachedFiles : null
                 })
             });
 

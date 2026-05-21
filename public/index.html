@@ -11,7 +11,7 @@
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css?v=2.3.0">
+    <link rel="stylesheet" href="style.css?v=2.4.0">
 </head>
 <body>
 
@@ -231,7 +231,14 @@
 
             <!-- 입력 도크 -->
             <footer class="chat-input-dock">
+                <!-- 첨부파일 칩 컨테이너 -->
+                <div id="attached-files-container" class="attached-files-container" style="display: none;"></div>
+                
                 <div class="input-box-container">
+                    <button id="attach-btn" class="attach-btn" title="서류 파일 첨부 (진단서, 녹취록 등)">
+                        <i class="fa-solid fa-paperclip"></i>
+                    </button>
+                    <input type="file" id="file-input" style="display: none;" multiple accept=".txt,.md,.json,.pdf,.png,.jpg,.jpeg">
                     <textarea id="chat-input" placeholder="가해자 변호사의 학습권 핑계, 반 분리 거부 상황 등을 구체적으로 입력하십시오..." rows="1"></textarea>
                     <button id="send-btn" class="send-btn" title="질문 전송"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
@@ -245,6 +252,6 @@
     </div>
 
     <!-- JS Logic -->
-    <script src="app.js?v=2.3.0"></script>
+    <script src="app.js?v=2.4.0"></script>
 </body>
 </html>

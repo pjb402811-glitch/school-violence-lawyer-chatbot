@@ -830,4 +830,96 @@ body, html {
     display: none !important;
 }
 
+/* ==========================================
+   6차 고도화: 📎 첨부파일(진단서, 녹취록 등) UI 스타일링
+   ========================================== */
+.attach-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    transition: var(--transition-smooth);
+    margin-right: 0.25rem;
+    flex-shrink: 0;
+}
+
+.attach-btn:hover {
+    color: var(--gold-accent);
+    background: rgba(212, 175, 55, 0.1);
+    transform: scale(1.05);
+}
+
+.attached-files-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    margin-bottom: -1px; /* 인풋창 테두리와 결합 느낌 제공 */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.file-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: #ffffff;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+    animation: fadeInUp 0.2s ease forwards;
+}
+
+.file-chip i.fa-file-lines {
+    color: var(--gold-accent);
+}
+
+.file-chip i.fa-file-image {
+    color: #3b82f6;
+}
+
+.file-chip i.fa-file-pdf {
+    color: #ef4444;
+}
+
+.file-chip:hover {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: rgba(212, 175, 55, 0.4);
+}
+
+.file-chip-remove {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.7rem;
+    padding: 0 2px;
+    display: flex;
+    align-items: center;
+    transition: var(--transition-smooth);
+}
+
+.file-chip-remove:hover {
+    color: #ef4444;
+    transform: scale(1.2);
+}
+
 
