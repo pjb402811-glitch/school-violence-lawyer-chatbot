@@ -1,0 +1,670 @@
+/* 
+   쏭비서 학폭 전문 AI 변호사 챗봇 프리미엄 디자인 시스템 
+   Midnight Dark & Rich Gold Accent Palette (Using HSL)
+*/
+
+:root {
+    --bg-base: #0d1117;
+    --bg-card: rgba(22, 27, 34, 0.7);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --gold-accent: #d4af37;
+    --gold-hover: #f3d060;
+    --neon-blue: #3b82f6;
+    --neon-blue-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    --gold-gradient: linear-gradient(135deg, #b8860b 0%, #d4af37 50%, #ffd700 100%);
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #6e7681;
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 글로벌 리셋 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Inter', 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 기본 앱 그리드 레이아웃 */
+.app-container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+/* 1. 좌측 사이드바 (서랍식 레이아웃 & 스크롤바) */
+.sidebar {
+    background: linear-gradient(180deg, #11141c 0%, #0d0f15 100%);
+    border-right: 1px solid var(--border-color);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    overflow-y: auto;
+    z-index: 100;
+    transition: var(--transition-smooth);
+}
+
+/* 스크롤바 디자인 */
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    border: 2px solid var(--gold-accent);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+.sidebar-header h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #ffffff;
+    font-family: 'Outfit', sans-serif;
+}
+
+.sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.sidebar-section h3 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--gold-accent);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: -0.5rem;
+}
+
+.section-tip {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+/* 인풋 데코 */
+.input-with-icon, .select-with-icon {
+    position: relative;
+    width: 100%;
+}
+
+.input-with-icon i, .select-with-icon i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.input-with-icon input, .select-with-icon select {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.25rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 0.85rem;
+    outline: none;
+    transition: var(--transition-smooth);
+}
+
+.input-with-icon input:focus, .select-with-icon select:focus {
+    border-color: var(--gold-accent);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.15);
+}
+
+/* 슬라이더 컨트롤 */
+.slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.03);
+}
+
+.slider-group label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+}
+
+.slider-group label span {
+    color: var(--gold-accent);
+    font-weight: 700;
+}
+
+.slider-group input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.1);
+    outline: none;
+}
+
+.slider-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--gold-accent);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.slider-group input[type="range"]::-webkit-slider-thumb:hover {
+    background: var(--gold-hover);
+    transform: scale(1.2);
+}
+
+/* 시뮬레이션 결과 박스 */
+.simulation-result {
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px dashed rgba(212, 175, 55, 0.3);
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.result-score {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--gold-accent);
+    text-align: center;
+}
+
+.result-measure-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.result-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.result-measure {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.4;
+}
+
+/* 다운로드 버튼 */
+.download-btn {
+    width: 100%;
+    padding: 0.85rem;
+    background: var(--gold-gradient);
+    border: none;
+    border-radius: 8px;
+    color: #000000;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+}
+
+.download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+    opacity: 0.95;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+    text-align: center;
+}
+
+.sidebar-footer p {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* 2. 우측 메인 영역 */
+.chat-area {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    height: 100vh;
+    background: radial-gradient(circle at top right, #161b22 0%, #0d1117 100%);
+    position: relative;
+}
+
+.chat-header {
+    background: rgba(13, 17, 23, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 2rem;
+    z-index: 10;
+}
+
+.header-title-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-icon {
+    font-size: 1.8rem;
+    color: var(--gold-accent);
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+}
+
+.chat-header h1 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 0.25rem;
+}
+
+.chat-header p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* 학습 판례 아코디언 */
+.knowledge-accordion {
+    margin: 1rem 2rem 0 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--bg-card);
+    overflow: hidden;
+}
+
+.accordion-toggle {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.accordion-toggle:hover {
+    background: rgba(255,255,255,0.02);
+}
+
+.chevron-icon {
+    transition: transform 0.3s ease;
+}
+
+.chevron-icon.rotate {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    display: none; /* 기본 닫힘 */
+    padding: 1.25rem;
+    border-top: 1px solid var(--border-color);
+    background: rgba(0,0,0,0.2);
+}
+
+.accordion-content.show {
+    display: block;
+}
+
+.accordion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.accordion-column h4 {
+    font-size: 0.85rem;
+    color: var(--gold-accent);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.accordion-column ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.accordion-column li {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+    position: relative;
+    padding-left: 0.75rem;
+}
+
+.accordion-column li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--gold-accent);
+}
+
+/* 3. 대화 이력창 (스크롤 영역) */
+.chat-history {
+    overflow-y: auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.chat-history::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-history::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+}
+
+.message {
+    display: flex;
+    gap: 1rem;
+    max-width: 85%;
+    animation: fadeInUp 0.4s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message.bot-msg {
+    margin-right: auto;
+}
+
+.message.user-msg {
+    margin-left: auto;
+    flex-direction: row-reverse;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.bot-msg .avatar {
+    border-color: var(--gold-accent);
+    color: var(--gold-accent);
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.15);
+}
+
+.bubble {
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    word-break: break-all;
+}
+
+.bot-msg .bubble {
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--gold-accent);
+    color: var(--text-primary);
+}
+
+/* AI 답변 내부 볼드/인용 처리 */
+.bot-msg .bubble strong {
+    color: #ffffff;
+}
+
+.user-msg .bubble {
+    background: var(--neon-blue-gradient);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25);
+}
+
+/* 타이핑 대기 애니메이션 */
+.typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 0.5rem 0.25rem;
+    align-items: center;
+}
+
+.typing-indicator span {
+    width: 6px;
+    height: 6px;
+    background: var(--text-secondary);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1.0); }
+}
+
+/* 4. 입력 도크 (글래스모피즘 텍스트아레아) */
+.chat-input-dock {
+    padding: 1.5rem 2rem 2rem 2rem;
+    background: linear-gradient(0deg, #0d1117 80%, rgba(13, 17, 23, 0) 100%);
+}
+
+.input-box-container {
+    display: flex;
+    align-items: center;
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.5rem 0.75rem 0.5rem 1rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: var(--transition-smooth);
+}
+
+.input-box-container:focus-within {
+    border-color: var(--gold-accent);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+}
+
+.input-box-container textarea {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 0.95rem;
+    outline: none;
+    resize: none;
+    max-height: 120px;
+    font-family: inherit;
+    line-height: 1.5;
+    padding: 0.5rem 0;
+}
+
+.input-box-container textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.send-btn {
+    background: var(--gold-gradient);
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    color: #000000;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+    margin-left: 0.75rem;
+    flex-shrink: 0;
+}
+
+.send-btn:hover {
+    transform: scale(1.05) rotate(-5deg);
+    opacity: 0.95;
+}
+
+.dock-footer {
+    text-align: center;
+    margin-top: 0.75rem;
+}
+
+.dock-footer span {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* 모바일 전용 토글 버튼 및 미디어 쿼리 */
+.sidebar-toggle-btn {
+    display: none;
+    position: fixed;
+    top: 1.25rem;
+    left: 1.25rem;
+    z-index: 200;
+    width: 40px;
+    height: 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* 반응형 모바일 브레이크포인트 (768px 이하) */
+@media (max-width: 768px) {
+    .app-container {
+        grid-template-columns: 1fr; /* 사이드바 완전 격리 */
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -320px; /* 숨김 처리 */
+        top: 0;
+        bottom: 0;
+        width: 300px;
+        box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar.open {
+        left: 0; /* 슬라이드 인 오픈 */
+    }
+
+    .sidebar-toggle-btn {
+        display: flex; /* 모바일에서만 노출 */
+    }
+
+    .chat-header {
+        padding: 1.25rem 1.25rem 1.25rem 4.5rem; /* 토글단추 공간 확보 */
+    }
+
+    .chat-header h1 {
+        font-size: 1.15rem;
+    }
+
+    .chat-header p {
+        font-size: 0.7rem;
+    }
+
+    .knowledge-accordion {
+        margin: 1rem 1rem 0 1rem;
+    }
+
+    .accordion-grid {
+        grid-template-columns: 1fr; /* 아코디언 열 1줄화 */
+        gap: 1rem;
+    }
+
+    .chat-history {
+        padding: 1rem;
+    }
+
+    .message {
+        max-width: 95%;
+    }
+
+    .bubble {
+        font-size: 0.85rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .chat-input-dock {
+        padding: 1rem;
+    }
+}

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚖️ 쏭비서 학폭 전문 AI 변호사 챗봇</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- 모바일 사이드바 토글 버튼 -->
+        <button id="sidebar-toggle" class="sidebar-toggle-btn">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <!-- 좌측 사이드바 (컨트롤 룸 & 시뮬레이터) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="app_icon.png" alt="App Icon" class="sidebar-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1048/1048953.png'">
+                <h2>쏭비서 법률 에이전트</h2>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3><i class="fa-solid fa-key"></i> Gemini API Key 설정</h3>
+                <div class="input-with-icon">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="api-key-input" placeholder="구글 API 키 입력" title="Gemini API Key">
+                </div>
+                <p class="section-tip">API 키 입력 시 실시간 판례 연동 초고도 RAG 모드로 동작합니다.</p>
+            </div>
+
+            <div class="sidebar-section">
+                <h3><i class="fa-solid fa-calculator"></i> 학폭위 처분 시뮬레이터</h3>
+                <p class="section-desc">교육부 고시 처분 적용 기준</p>
+                
+                <div class="slider-group">
+                    <label>폭력의 심각성: <span id="val-severity">2</span>점</label>
+                    <input type="range" id="slide-severity" min="0" max="4" value="2">
+                </div>
+                <div class="slider-group">
+                    <label>폭력의 지속성: <span id="val-duration">2</span>점</label>
+                    <input type="range" id="slide-duration" min="0" max="4" value="2">
+                </div>
+                <div class="slider-group">
+                    <label>폭력의 고의성: <span id="val-intent">2</span>점</label>
+                    <input type="range" id="slide-intent" min="0" max="4" value="2">
+                </div>
+                <div class="slider-group">
+                    <label>가해학생 반성도: <span id="val-repentance">2</span>점</label>
+                    <input type="range" id="slide-repentance" min="0" max="4" value="2">
+                </div>
+                <div class="slider-group">
+                    <label>피해학생 화해정도: <span id="val-reconciliation">2</span>점</label>
+                    <input type="range" id="slide-reconciliation" min="0" max="4" value="2">
+                </div>
+
+                <div class="simulation-result">
+                    <div class="result-score">총점: <span id="result-total-score">10</span> / 20점</div>
+                    <div class="result-measure-box">
+                        <span class="result-label">예상 조치:</span>
+                        <div id="result-predicted-measure" class="result-measure">제7호(학급교체)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3><i class="fa-solid fa-file-pdf"></i> 실전 법률 서식 다운로드</h3>
+                <div class="select-with-icon">
+                    <i class="fa-solid fa-file-signature"></i>
+                    <select id="document-selector">
+                        <option value="">-- 서식을 선택하십시오 --</option>
+                        <option value="urgent_action_request.md">학교장 긴급분리 촉구서</option>
+                        <option value="administrative_appeal.md">교육청 행정심판 청구서</option>
+                        <option value="criminal_complaint_opinion.md">수사기관 엄벌의견서</option>
+                        <option value="evidence_and_defense_guide.md">증거수집 가이드라인</option>
+                    </select>
+                </div>
+                <button id="download-btn" class="download-btn"><i class="fa-solid fa-circle-down"></i> 서식 무료 다운로드</button>
+            </div>
+            
+            <div class="sidebar-footer">
+                <p>© 2026 쏭비서 법률 오케스트레이션</p>
+                <p>v2.0.0 (FastAPI Serverless)</p>
+            </div>
+        </aside>
+
+        <!-- 우측 메인 영역 (챗 세션) -->
+        <main class="chat-area">
+            
+            <header class="chat-header">
+                <div class="header-title-container">
+                    <i class="fa-solid fa-scale-balanced logo-icon"></i>
+                    <div>
+                        <h1>학교폭력 피해학생 구제 AI 변호사</h1>
+                        <p>가해자 변호사의 학습권 변명을 깨부수고 자녀를 한 교실 방치로부터 즉각 해방시킬 날카로운 법적 보호막</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 학습 법령 및 판례 퀵 링크 아코디언 -->
+            <section class="knowledge-accordion">
+                <button class="accordion-toggle" id="accordion-toggle">
+                    <span><i class="fa-solid fa-graduation-cap"></i> 챗봇이 완벽히 학습 완료한 핵심 법리/판례 보기</span>
+                    <i class="fa-solid fa-chevron-down chevron-icon"></i>
+                </button>
+                <div class="accordion-content" id="accordion-content">
+                    <div class="accordion-grid">
+                        <div class="accordion-column">
+                            <h4>🏛️ 대법원 및 하급심 판례 요지</h4>
+                            <ul>
+                                <li><strong>대법원 2022두56676 판결</strong>: 가해자의 학습권 보장이 피해자가 안전하게 교육받을 권리보다 결코 우위에 설 수 없으며, 피해학생의 보호구제가 최우선 고려되어야 한다.</li>
+                                <li><strong>동일학급 방치 위법 판례</strong>: 외견상 상해 수치가 없더라도 심각한 정신적 피해(우울, 등교거부)가 인정된다면 동일 학급에 마주치게 두는 것은 위법한 2차 가해 방치이다.</li>
+                                <li><strong>행심위 기각 성공사례</strong>: 가해학생이 제기한 반 분리(학급교체) 처분 취소 행정심판 청구를 피해자의 참혹한 정신적 상해를 이유로 단호히 기각하고 분리를 승인함.</li>
+                            </ul>
+                        </div>
+                        <div class="accordion-column">
+                            <h4>⚖️ 대한민국 학교폭력예방법 조문</h4>
+                            <ul>
+                                <li><strong>제1조 (목적)</strong>: 이 법의 최우선 가치는 '피해학생의 보호'에 있다.</li>
+                                <li><strong>제16조 (보호조치)</strong>: 학교장은 필요 인정 시 즉각 심리상담, 치료요양, 학내 분반 조치를 시행할 독자적 의무 권한을 가진다.</li>
+                                <li><strong>제17조 (긴급조치)</strong>: 심의위 개최 전이라도 긴급 격리가 필요할 시 출석정지 및 접근금지를 1차 조치할 수 있다.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 대화 목록 컨테이너 -->
+            <section class="chat-history" id="chat-history">
+                <!-- 기본 로봇 웰컴 메시지 -->
+                <div class="message bot-msg">
+                    <div class="avatar"><i class="fa-solid fa-user-tie"></i></div>
+                    <div class="bubble">
+                        안녕하십니까, 피해 학생의 권리를 철저하게 사수하는 학교폭력 전문 AI 변호사입니다.<br><br>
+                        자녀분께서 처한 상황(가해학생과의 한 교실 방치, 상대방 대리인의 쌍방과실 주장, 보복 위협 등)을 말씀해 주시면, 
+                        <strong>대법원 판례와 최신 재결례에 기초한 날카롭고 빈틈이 없는 실전 법률·행정 대책</strong>을 바로 제시해 드리겠습니다.
+                    </div>
+                </div>
+            </section>
+
+            <!-- 입력 도크 -->
+            <footer class="chat-input-dock">
+                <div class="input-box-container">
+                    <textarea id="chat-input" placeholder="가해자 변호사의 학습권 핑계, 반 분리 거부 상황 등을 구체적으로 입력하십시오..." rows="1"></textarea>
+                    <button id="send-btn" class="send-btn" title="질문 전송"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+                <div class="dock-footer">
+                    <span>* 본 AI 조언은 참고용이며, 서류 최종 법원 접수 전 전문 대면 자문을 거칠 것을 권장합니다.</span>
+                </div>
+            </footer>
+
+        </main>
+        
+    </div>
+
+    <!-- JS Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
